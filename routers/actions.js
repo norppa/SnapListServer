@@ -42,8 +42,7 @@ exports.deleteList = (userId, listId) => {
 }
 
 exports.getAllLists = (userId) => {
-    const lists = db.prepare('SELECT id, name FROM lists WHERE owner=?').all(userId)
-    return JSON.stringify(lists)
+    return db.prepare('SELECT id, name FROM lists WHERE owner=?').all(userId)
 }
 
 exports.addItem = (userId, listId, itemName) => {

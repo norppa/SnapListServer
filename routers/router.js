@@ -1,7 +1,6 @@
 const router = require('express').Router()
 const passport = require('passport')
 const actions = require('./actions')
-const db = require('better-sqlite3')('snaplist.db')
 
 const { authenticate } = require('../auth/authUtils')
 require('../auth/passport')(passport)
