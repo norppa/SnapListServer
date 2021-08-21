@@ -16,7 +16,7 @@ router.post('/', authenticate, (req, res) => {
     const { username, userId } = req.user
     switch (action) {
         case 'getLists':
-            return res.send(actions.getAllLists(userId))
+            return res.send({ lists: actions.getAllLists(userId) })
         case 'createList':
             const createListResult = actions.createList(userId, listName)
             if (createListResult.error) return res.status(createListResult.status).send(createListResult.error)
