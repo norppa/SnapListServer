@@ -61,7 +61,7 @@ exports.deleteItem = (userId, itemId) => {
 
 exports.getItems = (userId, listId) => {
     const result = db.prepare('SELECT id,item,checked FROM items WHERE list=? AND list IN (SELECT id FROM lists WHERE owner=?)').all(listId, userId)
-    return result
+    return { listId, items: result }
 }
 
 exports.toggleItemCheck = (userId, itemId) => {
