@@ -68,6 +68,12 @@ exports.toggleItemCheck = (userId, itemId) => {
     db.prepare('UPDATE items SET checked = CASE WHEN checked = 0 THEN 1 ELSE 0 END WHERE id=? AND list IN (SELECT id FROM lists WHERE owner=?)').run(itemId, userId)
 }
 
+exports.setItemCheck = (userId, itemId, value) => {
+    console.log(userId, itemId, value)
+    db.prepare('UPDATE items SET checked=? WHERE id=? AND list IN (SELECT id FROM lists WHERE owner=?)')
+    .run(value ? 1 : 0, itemId, userId)
+}
+
 exports.deleteCheckedItems = (userId, listId) => {
     db.prepare('DELETE FROM items WHERE checked=1 AND list=? AND list in (SELECT id FROM lists WHERE owner=?)').run(listId, userId)
 }

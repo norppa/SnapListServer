@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
 })
 
 router.post('/', authenticate, (req, res) => {
-    const { action, listName, listId, itemName, itemId } = req.body
+    const { action, listName, listId, itemName, itemId, value } = req.body
     const { username, userId } = req.user
     switch (action) {
         case 'getLists':
@@ -39,6 +39,9 @@ router.post('/', authenticate, (req, res) => {
         case 'toggleItemCheck':
             actions.toggleItemCheck(userId, itemId)
             return res.send()
+        case 'setItemCheck':
+            actions.setItemCheck(userId, itemId, value)
+            res.send()
         case 'deleteCheckedItems':
             actions.deleteCheckedItems(userId, listId)
             return res.send()
