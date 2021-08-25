@@ -41,7 +41,7 @@ router.post('/', authenticate, (req, res) => {
             return res.send()
         case 'setItemCheck':
             actions.setItemCheck(userId, itemId, value)
-            res.send()
+            res.send({itemId: itemId, checked: value })
         case 'deleteCheckedItems':
             actions.deleteCheckedItems(userId, listId)
             return res.send()
