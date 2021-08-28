@@ -44,10 +44,10 @@ router.post('/', authenticate, (req, res) => {
             res.send({itemId: itemId, checked: value })
         case 'deleteCheckedItems':
             actions.deleteCheckedItems(userId, listId)
-            return res.send()
+            return res.send({ status: 'ok'})
         case 'deleteAllItems':
             actions.deleteAllItems(userId, listId)
-            return res.send()
+            return res.send({ status: 'ok'})
         default:
             res.send('action not found')
     }
