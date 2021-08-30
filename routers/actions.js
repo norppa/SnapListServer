@@ -38,7 +38,8 @@ exports.renameList = (userId, listId, listName) => {
 }
 
 exports.deleteList = (userId, listId) => {
-    db.prepare('DELETE FROM lists WHERE id=? AND owner=?').run(listId, userId)
+    const result = db.prepare('DELETE FROM lists WHERE id=? AND owner=?').run(listId, userId)
+    return result.changes > 0
 }
 
 exports.getAllLists = (userId) => {

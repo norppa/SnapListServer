@@ -13,6 +13,7 @@ router.get('/', async (req, res) => {
 router.post('/', authenticate, (req, res) => {
     const { action, listName, listId, itemName, itemId, value } = req.body
     const { username, userId } = req.user
+    var status = 'failed'
     switch (action) {
         case 'getLists':
             return res.send({ lists: actions.getAllLists(userId) })
@@ -22,34 +23,35 @@ router.post('/', authenticate, (req, res) => {
             return res.send({ id: createListResult.lastInsertRowid, name: listName })
         case 'renameList':
             const renameListResult = actions.renameList(userId, listId, listName)
-            return res.send()
+            return res.send({action, status: 'success'})
         case 'deleteList':
-            actions.deleteList(userId, listId)
-            return res.send()
+            const deleteListSuccess = actions.deleteList(userId, listId)
+            status = deleteListSuccess ? 'success' : 'failed'
+            return res.send({ action, status })
         case 'getItems':
             return res.send(actions.getItems(userId, listId))
         case 'addItem':
             const addItemResult = actions.addItem(userId, listId, itemName)
             if (addItemResult.error) return res.status(addItemResult.status).send(addItemResult.error)
             return res.send(addItemResult)
-        case 'delItem':
-            const deleteItemResult = actions.deleteItem(userId, itemId)
-            if (deleteItemResult.error) return res.status(deleteItemResult.status).send(deleteItemResult.error)
-            return res.send()
-        case 'toggleItemCheck':
-            actions.toggleItemCheck(userId, itemId)
-            return res.send()
+        // case 'delItem':
+        //     const deleteItemResult = actions.deleteItem(userId, itemId)
+        //     if (deleteItemResult.error) return res.status(deleteItemResult.status).send(deleteItemResult.error)
+        //     return res.send()
+        // case 'toggleItemCheck':
+        //     actions.toggleItemCheck(userId, itemId)
+        //     return res.send()
         case 'setItemCheck':
             actions.setItemCheck(userId, itemId, value)
             res.send({itemId: itemId, checked: value })
         case 'deleteCheckedItems':
             actions.deleteCheckedItems(userId, listId)
-            return res.send({ status: 'ok'})
+            return res.send({ action, status: 'success'})
         case 'deleteAllItems':
             actions.deleteAllItems(userId, listId)
-            return res.send({ status: 'ok'})
+            return res.send({ action, status: 'success'})
         default:
-            res.send('action not found')
+            res.send({ action: 'not found', status: 'failed' })
     }
 })
 
