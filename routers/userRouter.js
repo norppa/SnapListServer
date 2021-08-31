@@ -3,7 +3,6 @@ const db = require('better-sqlite3')('snaplist.db')
 const { signToken, generateSaltAndHash, passwordMatchesHash, authenticate } = require('../auth/authUtils')
 
 router.post('/login', async (req, res) => {
-    console.log('/login', req.body)
     const { username, password } = req.body
     if (!username) return res.status(400).json({ error: 'missing username' })
     if (!password) return res.status(400).json({ error: 'missing password' })
@@ -35,6 +34,34 @@ router.post('/register', async (req, res) => {
     if (result.changes !== 1) return res.status(500).send('Database error')
     const token = signToken({ username, userId: result.lastInsertRowid, iat: Date.now() })
     res.send(JSON.stringify({ token }))
+})
+
+router.post('/username', authenticate, (req, res) => {
+    const username = req.body.username
+    if (!username) return res.status(400).json({ error: 'missing username' })
+    const userId = req.user.userId
+    const result = db.prepare('UPDATE users SET username=? WHERE id=?').run(username, userId)
+    if (result.changes === 0) return res.status(500).send(result)
+    const token = signToken({ username, userId, iat: Date.now() })
+    res.send({ token })
+})
+
+router.post('/password', authenticate, (req, res) => {
+    const password = req.body.password
+    if (!password) return res.status(400).json({ error: 'missing password' })
+    const { username, userId } = req.user
+    const { salt, hash } = generateSaltAndHash(password)
+    const result = db.prepare('UPDATE users SET salt=?, hash=? WHERE id=?').run(salt, hash, userId)
+    if (result.changes === 0) return res.status(500).send(result)
+    const token = signToken({ username, userId, iat: Date.now() })
+    res.send({ token })
+})
+
+router.post('/delete', authenticate, (req, res) => {
+    const { userId } = req.user
+    const result = db.prepare('DELETE FROM users WHERE id=?').run(userId)
+    if (result.changes === 0) return res.status(500).send(result)
+    res.send({})
 })
 
 module.exports = router
