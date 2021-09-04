@@ -38,7 +38,9 @@ router.post('/register', async (req, res) => {
 
 router.post('/username', authenticate, (req, res) => {
     const username = req.body.username
-    if (!username) return res.status(400).json({ error: 'missing username' })
+    if (!username) return res.status(400).json({ error: 'USERNAME_MISSING' })
+    const existingUser = db.prepare('SELECT id FROM users WHERE username=?').get(username)
+    if (existingUser) return res.status(400).send({ error: 'USERNAME_TAKEN' })
     const userId = req.user.userId
     const result = db.prepare('UPDATE users SET username=? WHERE id=?').run(username, userId)
     if (result.changes === 0) return res.status(500).send(result)
